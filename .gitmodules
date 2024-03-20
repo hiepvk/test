@@ -1,8 +1,0 @@
-[submodule "submodule/YTABConfig"]
-	path = submodule/YTABConfig
-	url = https://github.com/PoomSmart/YTABConfig.git
-	branch = main
-[submodule "sub/YTABConfig"]
-	path = sub/YTABConfig
-	url = https://github.com/PoomSmart/YTABConfig.git
-	branch = main
