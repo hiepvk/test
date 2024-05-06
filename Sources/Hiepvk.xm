@@ -300,6 +300,12 @@ NSData *cellDividerData;
     }
     if ([self respondsToSelector:@selector(hasCompatibilityOptions)] && self.hasCompatibilityOptions && self.compatibilityOptions.hasAdLoggingData) return cellDividerData;
     // if (isAdString(description)) return cellDividerData;
+    NSArray *shortsToRemove = @[@"shorts_shelf.eml", @"shorts_video_cell.eml", @"6Shorts"];
+    for (NSString *shorts in shortsToRemove) {
+        if (IS_ENABLED(@"un_shorts_enabled") && [description containsString:shorts] && ![description containsString:@"history*"]) {
+            return nil;
+        }
+    }
     return %orig;
 }
 
@@ -345,10 +351,6 @@ NSData *cellDividerData;
 //ex
 %ctor {
     %init;
-
-    if (IS_ENABLED(@"noAds_enabled")) {
-        %init(gnoAds);
-    }
 
     // Change the default value of some options
     NSArray *allKeys = [[[NSUserDefaults standardUserDefaults] dictionaryRepresentation] allKeys];
