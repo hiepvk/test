@@ -231,28 +231,20 @@ static NSString *accessGroupID() {
 // https://github.com/PoomSmart/YouTube-X
 // Disable Ads
 %hook YTIPlayerResponse
-
-- (BOOL)isMonetized { return NO; }
-
+- (BOOL)isMonetized { return IS_ENABLED(@"noAds_enabled") ? NO : YES; }
 %end
 
 %hook YTDataUtils
-
-+ (id)spamSignalsDictionary { return @{}; }
-+ (id)spamSignalsDictionaryWithoutIDFA { return @{}; }
-
++ (id)spamSignalsDictionary { return IS_ENABLED(@"noAds_enabled") ? nil : %orig; }
++ (id)spamSignalsDictionaryWithoutIDFA { return IS_ENABLED(@"noAds_enabled") ? nil : %orig; }
 %end
 
 %hook YTAdsInnerTubeContextDecorator
-
-- (void)decorateContext:(id)context { %orig(nil); }
-
+- (void)decorateContext:(id)context { if (!IS_ENABLED(@"noAds_enabled")) %orig; }
 %end
 
 %hook YTAccountScopedAdsInnerTubeContextDecorator
-
-- (void)decorateContext:(id)context { %orig(nil); }
-
+- (void)decorateContext:(id)context { if (!IS_ENABLED(@"noAds_enabled")) %orig; }
 %end
 
 %hook YTReelInfinitePlaybackDataSource
