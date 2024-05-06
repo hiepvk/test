@@ -230,7 +230,6 @@ static NSString *accessGroupID() {
 
 // https://github.com/PoomSmart/YouTube-X
 // Disable Ads
-%group gnoAds
 %hook YTIPlayerResponse
 
 - (BOOL)isMonetized { return NO; }
@@ -289,6 +288,23 @@ BOOL isAdString(NSString *description) {
     return NO;
 }
 
+NSData *cellDividerData;
+
+%hook YTIElementRenderer
+
+- (NSData *)elementData {
+    NSString *description = [self description];
+    if ([description containsString:@"cell_divider"]) {
+        if (!cellDividerData) cellDividerData = %orig;
+        return cellDividerData;
+    }
+    if ([self respondsToSelector:@selector(hasCompatibilityOptions)] && self.hasCompatibilityOptions && self.compatibilityOptions.hasAdLoggingData) return cellDividerData;
+    // if (isAdString(description)) return cellDividerData;
+    return %orig;
+}
+
+%end
+
 %hook YTInnerTubeCollectionViewController
 
 - (void)loadWithModel:(YTISectionListRenderer *)model {
@@ -309,30 +325,6 @@ BOOL isAdString(NSString *description) {
         [contentsArray removeObjectsAtIndexes:removeIndexes];
     }
     %orig;
-}
-
-%end
-%end
-
-NSData *cellDividerData;
-
-%hook YTIElementRenderer
-
-- (NSData *)elementData {
-    NSString *description = [self description];
-    if ([description containsString:@"cell_divider"]) {
-        if (!cellDividerData) cellDividerData = %orig;
-        return cellDividerData;
-    }
-    if ([self respondsToSelector:@selector(hasCompatibilityOptions)] && self.hasCompatibilityOptions && self.compatibilityOptions.hasAdLoggingData && IS_ENABLED(@"noAds_enabled")) return cellDividerData;
-    // if (isAdString(description)) return cellDividerData;
-    NSArray *shortsToRemove = @[@"shorts_shelf.eml", @"shorts_video_cell.eml", @"6Shorts"];
-    for (NSString *shorts in shortsToRemove) {
-        if (IS_ENABLED(@"un_shorts_enabled") && [description containsString:shorts] && ![description containsString:@"history*"]) {
-            return nil;
-        }
-    }
-    return %orig;
 }
 
 %end
