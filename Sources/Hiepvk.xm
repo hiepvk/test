@@ -238,8 +238,8 @@ static NSString *accessGroupID() {
 
 %hook YTDataUtils
 
-+ (id)spamSignalsDictionary { return IS_ENABLED(@"noAds_enabled") ? @{} : %orig; }
-+ (id)spamSignalsDictionaryWithoutIDFA { return IS_ENABLED(@"noAds_enabled") ? @{} : %orig; }
++ (id)spamSignalsDictionary { return IS_ENABLED(@"noAds_enabled") ? @{}; }
++ (id)spamSignalsDictionaryWithoutIDFA { return IS_ENABLED(@"noAds_enabled") ? @{}; }
 
 %end
 
