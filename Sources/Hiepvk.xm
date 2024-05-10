@@ -268,7 +268,8 @@ static NSString *accessGroupID() {
 %end
 
 BOOL isAdString(NSString *description) {
-    if ([description containsString:@"brand_promo"]
+    if (IS_ENABLED(@"noAds_enabled")
+        || [description containsString:@"brand_promo"]
         || [description containsString:@"carousel_footered_layout"]
         || [description containsString:@"carousel_headered_layout"]
         || [description containsString:@"feed_ad_metadata"]
