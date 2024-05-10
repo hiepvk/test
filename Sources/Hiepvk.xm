@@ -259,6 +259,7 @@ static NSString *accessGroupID() {
 
 - (void)setReels:(NSMutableOrderedSet <YTReelModel *> *)reels {
     [reels removeObjectsAtIndexes:[reels indexesOfObjectsPassingTest:^BOOL(YTReelModel *obj, NSUInteger idx, BOOL *stop) {
+    if (IS_ENABLED(@"noAds_enabled"))
         return [obj respondsToSelector:@selector(videoType)] ? obj.videoType == 3 : NO;
     }]];
     %orig;
@@ -312,7 +313,7 @@ NSData *cellDividerData;
 %hook YTInnerTubeCollectionViewController
 
 - (void)loadWithModel:(YTISectionListRenderer *)model {
-    if ([model isKindOfClass:%c(YTISectionListRenderer)]) {
+    if (IS_ENABLED(@"noAds_enabled") && [model isKindOfClass:%c(YTISectionListRenderer)]) {
         NSMutableArray <YTISectionListSupportedRenderers *> *contentsArray = model.contentsArray;
         NSIndexSet *removeIndexes = [contentsArray indexesOfObjectsPassingTest:^BOOL(YTISectionListSupportedRenderers *renderers, NSUInteger idx, BOOL *stop) {
             if (![renderers isKindOfClass:%c(YTISectionListSupportedRenderers)])
