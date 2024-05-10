@@ -259,10 +259,10 @@ static NSString *accessGroupID() {
 
 - (void)setReels:(NSMutableOrderedSet <YTReelModel *> *)reels {
     [reels removeObjectsAtIndexes:[reels indexesOfObjectsPassingTest:^BOOL(YTReelModel *obj, NSUInteger idx, BOOL *stop) {
-    if (IS_ENABLED(@"noAds_enabled"))
         return [obj respondsToSelector:@selector(videoType)] ? obj.videoType == 3 : NO;
     }]];
-    %orig;
+    if (IS_ENABLED(@"noAds_enabled")) {}
+    else { return %orig; }
 }
 
 %end
