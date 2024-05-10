@@ -231,20 +231,28 @@ static NSString *accessGroupID() {
 // https://github.com/PoomSmart/YouTube-X
 // Disable Ads
 %hook YTIPlayerResponse
+
 - (BOOL)isMonetized { return IS_ENABLED(@"noAds_enabled") ? NO : YES; }
+
 %end
 
 %hook YTDataUtils
-+ (id)spamSignalsDictionary { return IS_ENABLED(@"noAds_enabled") ? nil : %orig; }
-+ (id)spamSignalsDictionaryWithoutIDFA { return IS_ENABLED(@"noAds_enabled") ? nil : %orig; }
+
++ (id)spamSignalsDictionary { return IS_ENABLED(@"noAds_enabled") ? @{} : %orig; }
++ (id)spamSignalsDictionaryWithoutIDFA { return IS_ENABLED(@"noAds_enabled") ? @{} : %orig; }
+
 %end
 
 %hook YTAdsInnerTubeContextDecorator
-- (void)decorateContext:(id)context { if (!IS_ENABLED(@"noAds_enabled")) %orig; }
+
+- (void)decorateContext:(id)context { if (!IS_ENABLED(@"noAds_enabled")) %orig(nil); }
+
 %end
 
 %hook YTAccountScopedAdsInnerTubeContextDecorator
-- (void)decorateContext:(id)context { if (!IS_ENABLED(@"noAds_enabled")) %orig; }
+
+- (void)decorateContext:(id)context { if (!IS_ENABLED(@"noAds_enabled")) %orig(nil); }
+
 %end
 
 %hook YTReelInfinitePlaybackDataSource
@@ -292,8 +300,8 @@ NSData *cellDividerData;
     }
     if ([self respondsToSelector:@selector(hasCompatibilityOptions)] && self.hasCompatibilityOptions && self.compatibilityOptions.hasAdLoggingData && IS_ENABLED(@"noAds_enabled")) return cellDividerData;
     // if (isAdString(description)) return cellDividerData;
-    BOOL hasShorts = ([description containsString:@"shorts_shelf.eml"] || [description containsString:@"shorts_video_cell.eml"] || [description containsString:@"6Shorts"]) && ![description containsString:@"history*"];
-    BOOL hasShortsInHistory = (IS_ENABLED(@"un_shorts_enabled") && [description containsString:@"compact_video.eml"] && [description containsString:@"youtube_shorts_"]);
+    BOOL hasShorts = ([description containsString:@"shorts_shelf.eml"] || [description containsString:@"shorts_video_cell.eml"] || [description containsString:@"6Shorts"]) && (IS_ENABLED(@"un_shorts_enabled") && ![description containsString:@"history*"]);
+    BOOL hasShortsInHistory = [description containsString:@"compact_video.eml"] && [description containsString:@"youtube_shorts_"];
 
     if (hasShorts || hasShortsInHistory) return cellDividerData;
     return %orig;
