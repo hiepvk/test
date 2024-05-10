@@ -290,14 +290,12 @@ NSData *cellDividerData;
         if (!cellDividerData) cellDividerData = %orig;
         return cellDividerData;
     }
-    if ([self respondsToSelector:@selector(hasCompatibilityOptions)] && self.hasCompatibilityOptions && self.compatibilityOptions.hasAdLoggingData) return cellDividerData;
+    if ([self respondsToSelector:@selector(hasCompatibilityOptions)] && self.hasCompatibilityOptions && self.compatibilityOptions.hasAdLoggingData && IS_ENABLED(@"noAds_enabled")) return cellDividerData;
     // if (isAdString(description)) return cellDividerData;
-    NSArray *shortsToRemove = @[@"shorts_shelf.eml", @"shorts_video_cell.eml", @"6Shorts"];
-    for (NSString *shorts in shortsToRemove) {
-        if (IS_ENABLED(@"un_shorts_enabled") && [description containsString:shorts] && ![description containsString:@"history*"]) {
-            return nil;
-        }
-    }
+    BOOL hasShorts = ([description containsString:@"shorts_shelf.eml"] || [description containsString:@"shorts_video_cell.eml"] || [description containsString:@"6Shorts"]) && ![description containsString:@"history*"];
+    BOOL hasShortsInHistory = (IS_ENABLED(@"un_shorts_enabled") && [description containsString:@"compact_video.eml"] && [description containsString:@"youtube_shorts_"];
+
+    if (hasShorts || hasShortsInHistory) return cellDividerData;
     return %orig;
 }
 
